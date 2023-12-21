@@ -9,6 +9,6 @@ public class MainController {
     @RequestMapping("/")
     public String test() {
 
-        return "view/test.jsp";
+        return "view/test.html";
     }
 }
