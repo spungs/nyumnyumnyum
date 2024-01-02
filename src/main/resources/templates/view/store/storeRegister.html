@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>가게 등록 페이지</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 가게 정보 입력 영역 */
+    .store-wrap {
+        display: flex;
+        flex-direction: row;
+        margin-top: 100px;
+        justify-content: center;
+    }
+
+    /* 가게 정보 입력 전체 박스 */
+    .store-box {
+        display: grid;
+        grid-template-columns: 200px 400px;
+        grid-template-rows: 70px 70px;
+        border: 2px solid rgb(230, 221, 221);
+    }
+
+    /* 가게 정보 입력 설명 부분(왼쪽) */
+    .store-inform {
+        display: flex;
+        background-color: rgba(225, 231, 236, 0.705);
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        border-bottom: 1px solid rgb(161, 161, 161);
+    }
+
+    /* 가게 정보 입력 부분(오른쪽) */
+    .store-input {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid rgb(161, 161, 161);
+        padding-left: 30px;
+    }
+
+    /* 가게 주소 input 태그 박스 영역 div */
+    .store-input-address {
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px solid rgb(161, 161, 161);
+        padding-left: 30px;
+    }
+
+    /* 우편 주소 input 태그 */
+    input[name="zipCode"] {
+        width: 70px;
+    }
+
+    /* 도로명 주소 input 태그 */
+    .address-box {
+        width: 320px;
+        margin-top: 6px;
+    }
+
+    /* 주소 검색 버튼 */
+    .address-search_button {
+        font-size: 20px;
+        height: 35px;
+        cursor: pointer;
+    }
+
+    /* 완료 버튼 영역 div */
+    .complete-register {
+        grid-column: 2;
+    }
+
+    /* 가게 설명 textarea 태그 */
+    textarea[name="description"] {
+        font-size: 20px;
+        height: 200px;
+        resize: none;
+    }
+
+    .address-search_button:hover {
+        background-color: black;
+        color: white;
+    }
+
+    .grid-2columns {
+        grid-row: span 2;
+    }
+
+    input {
+        font-size: 20px;
+        width: 220px;
+        height: 35px;
+    }
+</style>
+
+<body>
+    <div class="store-wrap">
+        <div class="store-box">
+            <div class="store-inform">가게 이름</div>
+            <div class="store-input"><input type="text" name="storeName" /></div>
+            <div class="store-inform">가게 전화번호</div>
+            <div class="store-input"><input type="text" name="storePhoneNum"></div>
+            <div class="store-inform grid-2columns">주소</div>
+            <div class="store-input-address grid-2columns">
+                <div><input type="text" name="zipCode" value="" disabled>
+                    <button class="address-search_button" onclick="popupAddress()">주소 검색</button>
+                </div>
+                <div><input type="text" class="address-box" name="address" value="" disabled>
+                </div>
+                <div><input type="text" class="address-box" name="addressDetail" value="" disabled>
+                </div>
+            </div>
+            <div class="store-inform grid-2columns">설명</div>
+            <div class="store-input-address grid-2columns">
+                <textarea type="text" class="address-box" name="description" value=""></textarea>
+            </div>
+            <div class="store-inform">음식 종류 (ex.한중일양)</div>
+            <div class="store-input"><input type="text" name="category"></div>
+            <div class="complete-register"><input type="button" name="" value="작성완료" onclick="submitButton()"></div>
+        </div>
+    </div>
+    <input type="hidden" name="zipcodeValue" value="">
+    <input type="hidden" name="userSelectedType" value="">
+    <input type="hidden" name="roadAddress" value="">
+    <input type="hidden" name="jibunAddress" value="">
+    <input type="hidden" name="sido" value="">
+    <input type="hidden" name="sigungu" value="">
+    <input type="hidden" name="bname1" value="">
+    <input type="hidden" name="bname2" value="">
+
+    <script>
+        let $storeName;
+        let $storePhoneNum;
+        let $zipCode;
+        let $zipcodeValue;
+        let $address;
+        let $addressDetail;
+        let $userSelectedType;
+        let $roadAddress;
+        let $jibunAddress;
+        let $sido;
+        let $sigungu;
+        let $bname1;
+        let $bname2;
+        let $description;
+        let $category;
+
+        window.onload = function () {
+            $storeName = document.querySelector('input[name="storeName"]');
+            $storePhoneNum = document.querySelector('input[name="storePhoneNum"]');
+            $zipCode = document.querySelector('input[name="zipCode"]');
+            $zipcodeValue = document.querySelector('input[name="zipcodeValue"]');
+            $address = document.querySelector('input[name="address"]');
+            $addressDetail = document.querySelector('input[name="addressDetail"]');
+            $userSelectedType = document.querySelector('input[name="userSelectedType"]');
+            $roadAddress = document.querySelector('input[name="roadAddress"]');
+            $jibunAddress = document.querySelector('input[name="jibunAddress"]');
+            $sido = document.querySelector('input[name="sido"]');
+            $sigungu = document.querySelector('input[name="sigungu"]');
+            $bname1 = document.querySelector('input[name="bname1"]');
+            $bname2 = document.querySelector('input[name="bname2"]');
+            $description = document.querySelector('textarea[name="description"]');
+            $category = document.querySelector('input[name="category"]');
+        }
+
+        // 주소 검색 팝업창 함수
+        function popupAddress() {
+
+            new daum.Postcode({
+                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+                oncomplete: function (data) {
+
+                    jusoSubmit(data).then((res) => {
+                        $zipCode.value = res.zipcode; //우편주소
+                        $address.value = res.addressSelect; // 사용자한테 보여줄 주소
+                        $addressDetail.value = ""; //상세주소
+                        $addressDetail.removeAttribute('disabled');
+                    });
+                }
+            }).open();
+
+        }
+
+        // 검색한 주소 데이터 넘겨주는 함수
+        function jusoSubmit(data) {
+            let tmpAddress;
+
+            //데이터 세팅
+            $zipcodeValue.value = data.zonecode;
+            $userSelectedType.value = data.userSelectedType;
+            $roadAddress.value = data.roadAddress;
+            $jibunAddress.value = data.jibunAddress;
+            $sido.value = data.sido;
+            $sigungu.value = data.sigungu;
+            $bname1.value = data.bname1;
+            $bname2.value = data.bname2;
+
+            //사용자가 선택한 주소 타입 (R:도로명, J:지번)
+            if ($userSelectedType.value == 'J') {
+                tmpAddress = data.jibunAddress;
+            }
+            else {
+                tmpAddress = data.roadAddress;
+            }
+
+            let result = {
+                zipcode: data.zonecode,
+                addressSelect: tmpAddress
+            }
+
+            let url = "/view/store/jusoSet";
+
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", url);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(result));
+
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        const res = xhr.response;
+                        resolve(JSON.parse(res));
+                    } else {
+                        console.error(xhr.status, xhr.statusText);
+                        console.log("error");
+                    }
+                };
+            });
+        }
+
+        /*
+        02	서울특별시
+        031	경기도
+        032	인천광역시
+        033	강원특별자치도
+        041	충청남도
+        042	대전광역시
+        043	충청북도
+        044	세종특별자치시
+        051	부산광역시
+        052	울산광역시
+        053	대구광역시
+        054	경상북도
+        055	경상남도
+        061	전라남도
+        062	광주광역시
+        063	전라북도
+        064	제주특별자치도
+        */
+
+        // 전화번호 validation 함수
+        function numberValidation(phoneNumber) {
+            // 허용된 지역번호 배열
+            const validAreaCodes = ['010', '011', '016', '017', '018', '019', '02', '031', '032', '033', '041', '042', '043', '044', '051', '052', '053', '054', '055', '061', '062', '063', '064'];
+
+            // 휴대전화 번호 정규표현식 (허용된 지역번호로 시작하고, xxx-xxxx 또는 xxxx-xxxx)
+            const phoneRegex = new RegExp(`^(${validAreaCodes.join('|')})[-]?\\d{3,4}[-]?\\d{4}$`);
+
+            // 번호가 정규표현식과 일치하는지 확인
+            const isValid = phoneRegex.test(phoneNumber);
+
+            return isValid;
+        }
+
+        // 등록 완료 버튼 함수
+        function submitButton() {
+            submitStoreInformatin().then((res) => {
+                if (res == "success") {
+                    alert("가게 등록이 완료되었습니다.");
+                    let url = "/";
+                    let goPost = document.createElement('form');
+                    goPost.setAttribute('method', 'get');
+                    goPost.setAttribute('action', url);
+                    document.body.appendChild(goPost);
+                    goPost.submit();
+                }
+                else {
+                    console.log(res);
+                    alert("가게 등록에 실패하였습니다. 다시 시도 부탁드립니다.");
+                }
+            });
+        }
+
+        // 입력한 정보 전송 함수
+        function submitStoreInformatin() {
+            let numberResult = numberValidation($storePhoneNum.value);
+            //구
+            let sigunguTmp1 = null;
+            let sigunguTmp2 = null;
+            //읍면동
+            let bnameTmp1 = null;
+            let bnameTmp2 = null;
+
+            if (!$storeName.value) {
+                alert("가게 이름을 입력해주세요.");
+                return false;
+            }
+
+            if (!numberResult) {
+                alert("올바른 전화번호를 입력해주세요.");
+                return false;
+            }
+
+            if (!$addressDetail.value) {
+                alert("상세주소를 입력해주세요.");
+                return false;
+            }
+
+            if (!$description.value) {
+                alert("가게에 대한 설명을 입력해주세요.");
+                return false;
+            }
+
+            if (!$category.value) {
+                alert("음식 종류를 입력해주세요.");
+                return false;
+            }
+
+            //구
+            sigunguTmp1 = $sigungu.value.split(" ");
+
+            console.log(sigunguTmp1.length);
+
+            if (sigunguTmp1.length == 2) {
+                sigunguTmp2 = sigunguTmp1[1];
+                sigunguTmp1 = sigunguTmp1[0];
+            }
+            else {
+                sigunguTmp1 = sigunguTmp1[0];
+            }
+
+            //읍면동
+            if ($bname1.value == null) {
+                bnameTmp1 = $bname2.value; //동
+            }
+            else {
+                bnameTmp1 = $bname1.value; //읍
+                bnameTmp2 = $bname2.value; //리
+            }
+
+            let result = {
+                storeName: $storeName.value,
+                storePhoneNum: $storePhoneNum.value,
+                zipCode: $zipcodeValue.value,
+                userSelectedType: $userSelectedType.value,
+                roadAddress: $roadAddress.value,
+                jibunAddress: $jibunAddress.value,
+                addressDetail: $addressDetail.value,
+                sido: $sido.value,
+                sigungu1: sigunguTmp1,
+                sigungu2: sigunguTmp2,
+                bname1: bnameTmp1,
+                bname2: bnameTmp2,
+                description: $description.value,
+                category: $category.value
+            }
+
+            let url = "/view/store/saveStore";
+
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", url);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(result));
+
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        const res = xhr.response;
+                        resolve(res);
+                    } else {
+                        console.error(xhr.status, xhr.statusText);
+                        console.log("error");
+                    }
+                };
+            });
+        }
+
+    </script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+</body>
+
+</html>

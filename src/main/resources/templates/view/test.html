@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Home</title>
+</head>
+<body>
+<form>
+	<input type="button" id="" class="btn" value="버튼1" onclick="" />
+	<input type="button" id="" class="btn" value="버튼2" onclick="" />
+	<input type="button" id="" class="btn" value="가게등록기능" onclick="registerStore()" />
+	<input type="button" id="" class="btn" value="버튼4" onclick="" />
+	<input type="button" id="" class="btn" value="버튼5" onclick="" />
+	<input type="button" id="" class="btn" value="버튼6" onclick="" />
+	<input type="button" id="" class="btn" value="버튼7" onclick="" />
+	<input type="button" id="" class="btn" value="버튼8" onclick="" />
+	<input type="button" id="" class="btn" value="버튼8" onclick="" />
+	<input type="button" id="" class="btn" value="버튼8" onclick="" />
+	<input type="button" id="" class="btn" value="버튼8" onclick="" />
+	<input type="button" id="" class="btn" value="버튼8" onclick="" />
+</form>
+
+<P>  The time on the server is ${serverTime}. </P>
+<div>템플릿에 있는 test.html</div>
+<script>
+	function registerStore() {
+		let url = "/view/store/register";
+		let goPost = document.createElement('form');
+		// let data = document.createElement('input');
+		//
+		// data.setAttribute('type', 'hidden');
+		// data.setAttribute('name', 'pstKindCd');
+		// data.setAttribute('value', boradPostType);
+		// goPost.appendChild(data);
+		goPost.setAttribute('method', 'post');
+		goPost.setAttribute('action', url);
+		document.body.appendChild(goPost);
+		goPost.submit();
+	}
+</script>
+</body>
+</html>
